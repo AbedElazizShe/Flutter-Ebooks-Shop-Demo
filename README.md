@@ -149,11 +149,11 @@ Mac/Linux
 ```
 keytool -list -v -alias androiddebugkey -keystore ~/.android/debug.keystore
 ```
-![image](/ss/firebase_configuration.png)
+![image](/ss/FBC.PNG)
 
 And visit [this](https://console.developers.google.com/apis/credentials/consent) page. Ensure you are signed in with same account where you have created Firebase project, choose your firebase project from the dropdown menu if it is not already selected and click on **edit app**, then fill up the form. Scroll down to "Authorized domain", copy the link and paste it as the screenshot below shows - don't forget to add http://;
 
-![image](/ss/dev_console.png)
+![image](/ss/DEVC.PNG)
 
 then save.
 
