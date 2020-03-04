@@ -72,7 +72,7 @@ class OrderProvider with ChangeNotifier {
       final List<OrderItem> orders = [];
       final responseData = json.decode(response.body) as Map<String, dynamic>;
 
-      if (responseData == null) return false;
+      if (responseData == null) return;
 
       responseData.forEach((orderId, orderData) {
         orders.add(OrderItem(

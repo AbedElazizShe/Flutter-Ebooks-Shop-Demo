@@ -19,7 +19,7 @@ class ProductsWidget extends StatelessWidget {
     final products =
         isStarred ? productsData.starredProducts : productsData.products;
 
-    return products.length == 0 ? Center(child: ProgressBar(),) : GridView.builder(
+    return productsData.isLoading ? Center(child: ProgressBar(),) : productsData.products.length == 0 ? Center(child:  Text('No Products yet, go to products screen to start adding'),) : GridView.builder(
       padding: const EdgeInsets.all(10.0),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 1,

@@ -19,6 +19,8 @@ class ShopProvider with ChangeNotifier {
   String token;
   String imageUrl;
 
+  var _isLoading;
+
   final _db = DBHelper();
 
   // The list of products
@@ -26,8 +28,9 @@ class ShopProvider with ChangeNotifier {
 
   AuthProvider _authProvider;
 
-  void update(
-      AuthProvider authProvider, List<ProductProvider> products) {
+  bool get isLoading => _isLoading;
+
+  void update(AuthProvider authProvider, List<ProductProvider> products) {
     userId = authProvider.userId;
     token = authProvider.token;
     _products = products;
@@ -98,7 +101,8 @@ class ShopProvider with ChangeNotifier {
 
     if (index >= 0) {
       final editProductUrl =
-          '${Constants.BASE_URL}${Constants.PRODUCTS}/${product.id}.json?auth=$token';
+          '${Constants.BASE_URL}${Constants.PRODUCTS}/${product
+          .id}.json?auth=$token';
 
       try {
         await http.patch(editProductUrl,
@@ -131,25 +135,34 @@ class ShopProvider with ChangeNotifier {
   // fetch products
   // here we pass a bool value to determine if we need to fetch all products or
   //just products belong to a specific user id
-  Future<List<ProductProvider>> fetchProducts([bool filterByUser = false]) async {
+  Future<List<ProductProvider>> fetchProducts(
+      [bool filterByUser = false]) async {
+    _isLoading = true;
     final filterOption =
-        filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : '';
+    filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : '';
     final fetchProductsUrl =
-        '${Constants.BASE_URL}${Constants.PRODUCTS}.json?auth=$token&$filterOption';
+        '${Constants.BASE_URL}${Constants
+        .PRODUCTS}.json?auth=$token&$filterOption';
 
     try {
       final responseData = await http.get(fetchProductsUrl);
       final data = json.decode(responseData.body) as Map<String, dynamic>;
       final List<ProductProvider> fetchedProducts = [];
 
-      if (data == null) return[];
+      if (data == null) {
+        _isLoading = false;
+        return [];
+      };
+
       if (data.containsKey('error')) {
+        _isLoading = false;
         _authProvider.logout();
-        return[];
+        return [];
       }
 
       final starProductUrl =
-          '${Constants.BASE_URL}${Constants.STARRED_PRODUCTS}/$userId.json?auth=$token';
+          '${Constants.BASE_URL}${Constants
+          .STARRED_PRODUCTS}/$userId.json?auth=$token';
       final starredResponse = await http.get(starProductUrl);
       final starredData = json.decode(starredResponse.body);
 
@@ -174,39 +187,45 @@ class ShopProvider with ChangeNotifier {
       print(data);
       _products = fetchedProducts;
       notifyListeners();
-
+      _isLoading = false;
     } catch (error) {
+      _isLoading = false;
       throw error;
     }
 
-    return  _products;
+    return _products;
   }
 
   Future fetchOfflineProducts() async {
+    _isLoading = true;
     try {
       final data = await _db.getData('${Constants.USER_PRODUCTS_TABLE}');
 
       print(data);
       _products = data
-          .map((prd) => ProductProvider(
-                id: prd['product_id'],
-                name: prd['product_name'],
-                description: prd['product_description'],
-                imageUrl: prd['product_image'],
-                price: prd['product_price'],
-              ))
+          .map((prd) =>
+          ProductProvider(
+            id: prd['product_id'],
+            name: prd['product_name'],
+            description: prd['product_description'],
+            imageUrl: prd['product_image'],
+            price: prd['product_price'],
+          ))
           .toList();
+      _isLoading = false;
       notifyListeners();
 
       return;
     } catch (error) {
+      _isLoading = false;
       throw error;
     }
   }
 
   Future<bool> deleteProduct(String productId) async {
     final deleteProductUrl =
-        '${Constants.BASE_URL}${Constants.PRODUCTS}/$productId.json?auth=$token';
+        '${Constants.BASE_URL}${Constants
+        .PRODUCTS}/$productId.json?auth=$token';
 
     final index = _products.indexWhere((product) => product.id == productId);
     var product = _products[index];

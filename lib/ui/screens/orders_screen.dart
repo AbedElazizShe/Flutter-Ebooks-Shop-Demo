@@ -18,13 +18,20 @@ class OrdersScreen extends StatefulWidget {
 class OrdersScreenState extends State<OrdersScreen> {
   Future _future;
 
+  var _isLoading;
+
   void _fetchOrders() async {
+
     _future =
     await Provider.of<OrderProvider>(context, listen: false).fetchOrders();
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
   void initState() {
+    _isLoading = true;
     _fetchOrders();
     super.initState();
   }
@@ -40,7 +47,8 @@ class OrdersScreenState extends State<OrdersScreen> {
             if (snapshot.error != null) {
               return Center(child: Text(Strings.ERROR),);
             } else {
-              return Consumer<OrderProvider>(builder: (ctx, data, _) => data.ordersCount == 0 ? Center(child: ProgressBar(),) :
+              return Consumer<OrderProvider>(builder: (ctx, data, _) => _isLoading ? Center(child: ProgressBar(),) :
+              data.ordersCount == 0 ? Center(child:  Text('No orders yet!'),):
                   ListView.builder(itemCount: data.ordersCount,
                       itemBuilder: (ctx, i) =>
                           OrdersWidget(data.orders[i])));

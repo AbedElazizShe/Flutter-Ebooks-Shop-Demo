@@ -119,7 +119,7 @@ In this app, user_products table was created where each product has an id, name,
 
 The database provides a set of functions to insert, delete, update, and query to read and write data. Refer to [db_helper.dart](/lib/helpers/db_helper.dart).
 
-# Usage
+# Setup and run the app
 You can clone or download the project to your machine and open it in Android Studio or any IDE you prefer.
 
 View pubspec.yaml file and click on Packages get if you’re using Android Studio or run
@@ -135,6 +135,28 @@ In order for the app to function, it is important to setup a Firebase project by
     static const LOG_IN_AUTH_URL = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=[add_your_key]';
 
 ```
+
+Cross Check: Make sure you added SHA certificate fingerprints to your Android app at Firebase console settings for the used keystore, you can get that value for your debug keystore as follows;
+
+Windows
+
+```
+keytool -list -v -alias androiddebugkey -keystore %USERPROFILE%\.android\debug.keystore
+```
+
+Mac/Linux
+
+```
+keytool -list -v -alias androiddebugkey -keystore ~/.android/debug.keystore
+```
+![image](/ss/firebase_configuration.png)
+
+And visit [this](https://console.developers.google.com/apis/credentials/consent) page. Ensure you are signed in with same account where you have created Firebase project, choose your firebase project from the dropdown menu if it is not already selected and click on **edit app**, then fill up the form. Scroll down to "Authorized domain", copy the link and paste it as the screenshot below shows - don't forget to add http://;
+
+![image](/ss/dev_console.png)
+
+then save.
+
 
 * **Firebase Realtime Database**: in this project, realtime database is used, from Firebase console, choose Database - below Authentication- and click on Realtime database. When it is created, choose “Data” tab and copy the link then add to BASE_URL in constants.dart
 ```dart

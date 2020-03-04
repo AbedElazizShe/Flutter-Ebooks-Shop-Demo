@@ -15,6 +15,7 @@ import 'edit_product_screen.dart';
 class ProductsScreen extends StatefulWidget {
   static const START = '/products-screen';
 
+
   @override
   State createState() => _ProductsScreenState();
 }
@@ -36,7 +37,6 @@ class _ProductsScreenState extends State<ProductsScreen> {
   @override
   void initState() {
     super.initState();
-
     initConnectivity();
     listenToConnectivityChanges();
   }
@@ -47,11 +47,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
         body: RefreshIndicator(
             child: Consumer<ShopProvider>(
                 builder: (ctx, productsData, _) =>
-                    productsData.products.length == 0
+                   productsData.isLoading
                         ? Center(
                             child: ProgressBar(),
                           )
-                        : Padding(
+                        :  productsData.products.length == 0 ? Center(child:  Text('No Products yet, start adding'),) :Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: ListView.builder(
                               itemBuilder: (ctx, index) => UserProductsWidget(
